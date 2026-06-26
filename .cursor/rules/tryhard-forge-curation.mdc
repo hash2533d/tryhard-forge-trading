@@ -1,0 +1,51 @@
+---
+description: TryHard Forge curation — daily manifest, chart screenshots, HUMAN_CURATED ingest, 6-month training phase
+globs:
+  - **/tryhard-forge-trading/regime_library/**
+  - **/data_ingestion_patch.py
+  - **/curated_setups.jsonl
+  - **/daily_manifest.jsonl
+  - **/readiness_checker.py
+  - **/cursor_training_loop.py
+alwaysApply: false
+---
+
+# TryHard Forge — Curation / Training Mode
+
+You are helping the user **curate** the 6-month Regime Library. Full doc: `CURSOR_TRAINING.md` §17.
+
+## When user curates — default workflow
+
+1. **Draft manifest row** — JSONL one-liner for `regime_library/daily_manifest.jsonl`:
+   ```json
+   {"date_str":"YYYY-MM-DD","notes":"...","image_path":"C:/Users/dlafa/Desktop/TradingScreenshots/....jpg","timeframe":"Scalping","cycle_tank_id":"TANK_01_MERCURY","strict_image":false,"indicators":{"ribbon":"+2","nearest_node":63120}}
+   ```
+2. **Run ingest** (execute yourself):
+   ```powershell
+   cd C:\Users\dlafa\tryhard-forge-trading
+   python data_ingestion_patch.py --manifest regime_library/daily_manifest.jsonl
+   python cursor_training_loop.py --skip-ingest-if-empty
+   ```
+3. **Readiness** — run `python readiness_checker.py`, report blockers.
+
+## Notes quality bar
+
+- Min 20 chars; reference GFLBS node, ribbon, session phase, ATM template used
+- Tag tank ID (`TANK_01_MERCURY`, increment per 18-day cycle)
+- `timeframe`: Scalping → scalper, Day Trader → daytrade, Swing → swing
+
+## What to do when user says…
+
+| User says | You do |
+|-----------|--------|
+| "curate today" / "grade session" | Manifest row + ingest + readiness |
+| "drop chart" | Confirm path under `TradingScreenshots` or `regime_library/charts` |
+| "week 1 data" | Init folders + example manifest + ingest |
+| "ready for live?" | `readiness_checker.py` + explain Phase 2 gates |
+| "shadow mode" | Regret loop on fills, no live execution |
+
+## Forbidden in Phase 1
+
+- Autonomous trade execution
+- Memory nodes without `HUMAN_CURATED`
+- Skipping image path metadata (warn if file missing)

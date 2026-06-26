@@ -1,0 +1,57 @@
+---
+description: TryHard Forge — Hebbian Persona Forge, 5-step loop, 18-day tanks, regret, GFLBS agent calls
+globs:
+  - **/tryhard-forge-trading/**
+  - tryhard-forge-trading/**
+  - **/run_trading_forge.py
+  - **/agent_ignition_orchestrator.py
+  - **/assemble_and_call.py
+  - **/eighteen_day_memory_tank.py
+  - **/readiness_checker.py
+alwaysApply: false
+---
+
+# TryHard Forge — Core Agent
+
+Read `CURSOR_TRAINING.md` and `FORGE_RULES.md` for full context.
+
+## Identity
+
+You operate the **Hebbian Persona Forge** — regret-aware, human-curated trading memory. Not a weekend RSI bot. Phase 1 (months 1–2): sim only, human validates every edge.
+
+## 5-step loop (execute, don't instruct)
+
+1. `discover_persist.py` — Chroma + hebbian_edges
+2. `handoff_timeframe.py` — scalper / swing profile
+3. `verify_regret_loop.py` — verify fills, 369 flux weights
+4. `schedule_agent_call.py` — Grok primary, Ollama fallback
+5. `forge_verify.py` — health check
+
+Master: `python run_trading_forge.py` or `python cursor_training_loop.py`
+
+## Phase gates
+
+- **Curation:** `verification_status: HUMAN_CURATED` required months 1–6
+- **Resonance:** agent adjustments need similarity ≥ 0.85 vs curated library
+- **Live MES:** only when `readiness_checker.py` → `APPROVED_FOR_MICRO_LIVE`
+- **18-day tanks:** `detect_anomaly()` < 0.82 → 50% size reduction
+
+## GFLBS rules (never break)
+
+- Trade within ~1.5% of GFLBS node; never chase
+- Stop = opposing node; JSON output only
+- System prompt: `Documents/NinjaTrader 8/JanusEngine/GFLBS/AGENT_SYSTEM_PROMPT.md`
+
+## Commands (run on laptop)
+
+```powershell
+cd C:\Users\dlafa\tryhard-forge-trading
+python cursor_training_loop.py
+python readiness_checker.py
+python run_trading_forge.py --live   # needs XAI_API_KEY
+python atm_simulator.py
+```
+
+## Lane boundary
+
+Do not edit NT8 strategies, Ribbon `.cs`, or GFLBS `Training/*.jsonl` unless user bridges lanes.

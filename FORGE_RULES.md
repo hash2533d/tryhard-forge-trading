@@ -204,3 +204,15 @@ python readiness_checker.py
 ```
 
 **Micro risk bound:** 1 MES, ~12-tick stop ≈ **$15** structural risk per trade.
+
+## SECTION 19: CURSOR TRAINING INTEGRATION
+
+- Open workspace: `C:\Users\dlafa\tryhard-forge-trading`
+- Rules: `.cursor/rules/tryhard-forge.mdc`, `tryhard-forge-curation.mdc`
+- Daily sync: `python cursor_training_loop.py` → `cursor_handoff.json`
+- Training pack: `CURSOR_TRAINING.md`, `.instructions.md`
+
+```powershell
+# Open new Cursor chat with:
+@CURSOR_TRAINING.md @cursor_handoff.json
+```
