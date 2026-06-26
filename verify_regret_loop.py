@@ -14,6 +14,7 @@ from pathlib import Path
 import chromadb
 import pandas as pd
 
+from flux_369 import apply_flux_delta, compute_flux_369_weight
 from handoff_timeframe import get_active_profile, get_regret_pivot_threshold
 
 ROOT = Path(__file__).resolve().parent
@@ -157,28 +158,51 @@ class VerifyRegretAgent:
         metas = existing.get("metadatas") or []
         weight = float(metas[0].get("weight", 1.0)) if metas else 1.0
 
-        if regret <= 0.0001:
-            weight += 0.15
-        else:
-            weight -= regret * 0.5
+        flux = compute_flux_369_weight(
+            float(fill.get("price", 0)),
+            fill.get("timestamp", datetime.now()),
+            qty=float(fill.get("qty", 1.0)),
+            profit=float(fill.get("profit", 0)),
+        )
 
-        weight = round(weight, 3)
+        if regret <= 0.0001:
+            delta = apply_flux_delta(0.15, flux)
+        else:
+            delta = apply_flux_delta(-regret * 0.5, flux)
+
+        weight = round(max(0.1, min(2.0, weight + delta)), 3)
+        edge_meta = {
+            "weight": weight,
+            "signal_id": signal_id,
+            "regret": regret,
+            **flux.to_metadata(),
+        }
 
         if weight < 0.2:
             try:
                 self.hebbian.delete(ids=[edge_id])
             except Exception:
                 pass
-            print(f"[VERIFY PRUNE] {signal_id} removed (weight {weight})")
+            print(
+                f"[VERIFY PRUNE] {signal_id} removed (weight {weight}, "
+                f"flux×{flux.multiplier})"
+            )
         else:
             self.hebbian.upsert(
                 ids=[edge_id],
-                documents=[f"fill edge {signal_id} regret={regret:.4f}"],
-                metadatas=[{"weight": weight, "signal_id": signal_id, "regret": regret}],
+                documents=[
+                    f"fill edge {signal_id} regret={regret:.4f} mod9={flux.mod9} dr={flux.digital_root}"
+                ],
+                metadatas=[edge_meta],
             )
-            print(f"[VERIFY] {signal_id} weight = {weight:.3f} regret = {regret:.4f}")
+            lock = "369-LOCK" if flux.is_369_lock else "off-res"
+            print(
+                f"[VERIFY] {signal_id} weight={weight:.3f} regret={regret:.4f} "
+                f"flux×{flux.multiplier} mod9={flux.mod9} [{lock}]"
+            )
 
         if self.trading_mem is not None:
+            mem_delta = apply_flux_delta(0.05 if regret <= 0.0001 else -0.15 * regret, flux)
             hits = self.trading_mem.query(
                 query_texts=[f"fill {signal_id} profit={fill.get('profit', 0)}"],
                 n_results=1,
@@ -188,9 +212,10 @@ class VerifyRegretAgent:
             if ids and metas2:
                 meta = metas2[0]
                 meta["hebbian_weight"] = round(
-                    max(0.1, min(2.0, float(meta.get("hebbian_weight", 1.0)) + (0.05 if regret <= 0.0001 else -0.15 * regret))),
+                    max(0.1, min(2.0, float(meta.get("hebbian_weight", 1.0)) + mem_delta)),
                     3,
                 )
+                meta.update(flux.to_metadata())
                 self.trading_mem.update(ids=[ids[0]], metadatas=[meta])
 
         return weight

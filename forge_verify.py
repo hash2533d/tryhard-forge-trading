@@ -38,6 +38,16 @@ def main() -> int:
     if hebbian_count == 0:
         print("WARN: hebbian_edges empty (run discover_persist)")
 
+    try:
+        from flux_369 import compute_flux_369_weight
+        from datetime import datetime
+
+        fw = compute_flux_369_weight(63120.0, datetime.now())
+        print(f"flux_369: OK (sample multiplier={fw.multiplier})")
+    except Exception as exc:
+        print(f"FAIL flux_369: {exc}")
+        ok = False
+
     print("Steps wired:")
     for step in (
         "discover_persist.py",
@@ -45,6 +55,7 @@ def main() -> int:
         "verify_regret_loop.py",
         "schedule_agent_call.py",
         "run_trading_forge.py",
+        "flux_369.py",
     ):
         exists = (ROOT / step).exists()
         print(f"  [{'OK' if exists else 'MISSING'}] {step}")

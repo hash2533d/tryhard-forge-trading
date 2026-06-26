@@ -5,7 +5,10 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import datetime
 from pathlib import Path
+
+from flux_369 import compute_flux_369_weight
 
 import chromadb
 from chromadb.utils import embedding_functions
@@ -78,13 +81,23 @@ def seed_from_history(json_path: Path, reset: bool = False) -> dict[str, int]:
 
         for n in chunk:
             nid = str(n.get("id", f"edge_{start}"))
+            payload = n.get("payload", {})
+            price = float(
+                payload.get("nearest_node")
+                or payload.get("price_level")
+                or payload.get("entry")
+                or 0
+            )
+            flux = compute_flux_369_weight(price, datetime.now(), qty=1.0)
+            base_w = float(n.get("hebbian_meta", {}).get("base_weight", 1.0))
             edge_ids.append(f"edge_{nid}")
-            edge_docs.append(n["payload"].get("raw_notes", "")[:512])
+            edge_docs.append(payload.get("raw_notes", "")[:512])
             edge_metas.append(
                 {
                     "node_id": nid,
-                    "weight": float(n.get("hebbian_meta", {}).get("base_weight", 1.0)),
+                    "weight": round(min(2.0, base_w * flux.multiplier), 3),
                     "timeframe": str(n.get("target_timeframe", "swing")),
+                    **flux.to_metadata(),
                 }
             )
 

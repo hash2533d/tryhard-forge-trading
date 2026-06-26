@@ -104,3 +104,20 @@ python test_watermark_evolution.py          # watermark demo
 
 Production Grok calls via `XAI_API_KEY` → `tryhard_quant_lsystem.py` (`grok-4` default).
 Use `--require-coherence` on orchestrator for deploys (300s gate enforced).
+
+## SECTION 14: 369 FLUX WEIGHTING (Hebbian edges)
+
+All `hebbian_edges` and live regret updates pass through `flux_369.py`:
+
+| Signal | Effect on weight delta |
+|--------|----------------------|
+| mod9 ∈ {0, 3, 6} | Boost (+10–15% on delta) — phase-locked |
+| digital root ∈ {3, 6, 9} | +8% boost |
+| flux near V_c anchor (3k / 9k / 27k) | +6% material-track boost |
+| mod9 ∈ {4, 5} | −12% dampen (off-resonance) |
+
+Metadata stored per edge: `flux_mod9`, `flux_digital_root`, `flux_multiplier`, `flux_369_lock`.
+
+```bash
+python test_flux_369.py
+```

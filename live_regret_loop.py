@@ -12,6 +12,8 @@ import chromadb
 import pandas as pd
 from chromadb.utils import embedding_functions
 
+from flux_369 import apply_flux_delta, compute_flux_369_weight
+
 ROOT = Path(__file__).resolve().parent
 CHROMA_PATH = ROOT / "agent_longterm_memory"
 COLLECTION = "trading_memory"
@@ -76,7 +78,17 @@ def update_weights(collection, fills: pd.DataFrame, dry_run: bool = False) -> in
     for _, row in fills.iterrows():
         tf = timeframe_from_fill(row)
         regret = regret_score(row)
-        delta = -0.15 * regret if regret > 0 else 0.05
+        try:
+            entry_ts = pd.to_datetime(row.get("entry_time"))
+        except Exception:
+            entry_ts = datetime.now()
+        flux = compute_flux_369_weight(
+            float(row.get("entry_price", row.get("price", 0)) or 0),
+            entry_ts.to_pydatetime() if hasattr(entry_ts, "to_pydatetime") else datetime.now(),
+            profit=float(row.get("profit", 0)),
+        )
+        base_delta = -0.15 * regret if regret > 0 else 0.05
+        delta = apply_flux_delta(base_delta, flux)
 
         query = (
             f"{row.get('instrument', '')} {row.get('side', '')} "
@@ -101,6 +113,7 @@ def update_weights(collection, fills: pd.DataFrame, dry_run: bool = False) -> in
                 "memory_id": mem_id,
                 "old_weight": old_w,
                 "new_weight": new_w,
+                **flux.to_metadata(),
             }
             if not dry_run:
                 meta["hebbian_weight"] = new_w
