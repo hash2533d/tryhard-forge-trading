@@ -1,0 +1,76 @@
+{
+  "cycle_days": 18,
+  "tracks": {
+    "futures_mercury": {
+      "label": "CME futures — ES / NQ / MES / MNQ",
+      "tanks": [
+        {
+          "tank_id": "TANK_01_MERCURY",
+          "cycle": 1,
+          "instruments": ["ES", "NQ"],
+          "charts_required": false,
+          "notes": "Foundation cycle — sim + manifest metadata + fills. No micro charts yet."
+        },
+        {
+          "tank_id": "TANK_02_MERCURY",
+          "cycle": 2,
+          "instruments": ["MES", "MNQ"],
+          "charts_required": true,
+          "notes": "MES/MNQ chart screenshots in manifest image_path."
+        },
+        {
+          "tank_id": "TANK_03_MERCURY",
+          "cycle": 3,
+          "instruments": ["ES", "NQ", "MES", "MNQ"],
+          "charts_required": true,
+          "notes": "Full four-root futures stack."
+        }
+      ]
+    },
+    "btc_mercury": {
+      "label": "BTC — separate 18-day lane (GFLBS nodes, no VP)",
+      "tanks": [
+        {
+          "tank_id": "TANK_BTC_01_MERCURY",
+          "cycle": 1,
+          "instruments": ["BTC"],
+          "charts_required": false,
+          "notes": "BTC foundation — GFLBS node rejections/acceptances, metadata + fills. No POC/VAH/VAL."
+        },
+        {
+          "tank_id": "TANK_BTC_02_MERCURY",
+          "cycle": 2,
+          "instruments": ["BTC"],
+          "charts_required": true,
+          "notes": "BTC chart screenshots at GFLBS grid nodes; bank targets at nodes only."
+        },
+        {
+          "tank_id": "TANK_BTC_03_MERCURY",
+          "cycle": 3,
+          "instruments": ["BTC"],
+          "charts_required": true,
+          "notes": "Full BTC curation lane — independent of futures tank resonance."
+        }
+      ]
+    }
+  },
+  "manifest_rules": {
+    "futures_cycle_tank_id_prefix": "TANK_",
+    "btc_cycle_tank_id_prefix": "TANK_BTC_",
+    "never_mix_tracks_in_one_tank": true,
+    "btc_forbidden_indicators": ["POC", "VAH", "VAL", "volume_profile"]
+  },
+  "readiness_gate": {
+    "futures": {
+      "min_tanks": 3,
+      "min_trades": 30,
+      "min_curated_setups": 10
+    },
+    "btc": {
+      "min_tanks": 3,
+      "min_trades": 20,
+      "min_curated_setups": 8,
+      "notes": "BTC lane evaluated separately; does not count toward futures live gate."
+    }
+  }
+}
