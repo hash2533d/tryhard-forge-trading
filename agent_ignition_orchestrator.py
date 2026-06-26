@@ -2,7 +2,7 @@
 """
 Master Ignition — full TryHard Forge loop.
 
-ingestion → Chroma seed → regret bridge → timeframe profile → agent call
+ingestion → Chroma seed → regret → timeframe → agent call → quant L-System → verify
 """
 
 from __future__ import annotations
@@ -15,15 +15,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-
-STEPS = (
-    "build_ingested_memory",
-    "seed_memory",
-    "live_regret_loop",
-    "timeframe_context_builder",
-    "assemble_and_call",
-    "verify_stack",
-)
 
 
 def run_step(script: str, extra_args: list[str] | None = None) -> dict:
@@ -54,6 +45,17 @@ def main() -> int:
         action="store_true",
         help="Skip regret loop when live_fills.csv absent",
     )
+    parser.add_argument(
+        "--skip-quant",
+        action="store_true",
+        help="Skip step 6 quant L-System strategy generation",
+    )
+    parser.add_argument(
+        "--require-coherence",
+        action="store_true",
+        help="Enforce 300s coherence gate on quant step (production deploy)",
+    )
+    parser.add_argument("--watermark", default="gflbsdragon")
     parser.add_argument(
         "--provider",
         default="auto",
@@ -90,12 +92,28 @@ def main() -> int:
     report["steps"].append(result)
 
     asm_args = ["--context", args.context, "--provider", args.provider]
-    if args.live:
-        asm_args.append("--live")
-    else:
-        asm_args.append("--dry-run")
+    asm_args.append("--live" if args.live else "--dry-run")
     result = run_step("assemble_and_call", asm_args)
     report["steps"].append(result)
+
+    if not args.skip_quant:
+        quant_args = [
+            "--context",
+            args.context,
+            "--watermark",
+            args.watermark,
+            "--ignition",
+        ]
+        if args.require_coherence:
+            quant_args.append("--require-coherence")
+        result = run_step("run_quant_strategy", quant_args)
+        report["steps"].append(result)
+        if result["returncode"] != 0:
+            print("ABORT: run_quant_strategy failed")
+            _write_report(report)
+            return 1
+    else:
+        report["steps"].append({"script": "run_quant_strategy", "skipped": "user --skip-quant"})
 
     result = run_step("verify_stack")
     report["steps"].append(result)

@@ -4,6 +4,7 @@ ingested_agent_memory.json
 regret_updates.jsonl
 structured_facts.jsonl
 last_ignition_report.json
+last_quant_strategy.json
 
 # Live trade exports (private)
 live_fills.csv

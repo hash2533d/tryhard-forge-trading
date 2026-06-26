@@ -9,6 +9,8 @@ Portable rules for the GFLBS multi-timeframe trading orchestration loop.
 3. **Regret** (`live_regret_loop.py`) — NT8 fills → weight nudges on nearest memory vectors
 4. **Timeframe** (`timeframe_context_builder.py`) — Scalper / Day / Swing profile injection by clock
 5. **Ignite** (`assemble_and_call.py`) — Grok primary, Ollama (`phi4:latest`) fallback
+6. **Quant L-System** (`run_quant_strategy.py`) — Steellarc Trifecta strategy + fact harvest
+7. **Verify** (`verify_stack.py`) — health check
 
 ## Core trading rules (never break)
 
@@ -86,8 +88,10 @@ Documents/NinjaTrader 8/JanusEngine/Telemetry/janus_shadow_ledger.jsonl
 ### 13.4 Engine entrypoint
 
 ```bash
-python test_watermark_evolution.py          # demo watermark + fact harvest
-python -c "from tryhard_quant_lsystem import TryHardQuantLSystemEngine; ..."
+python agent_ignition_orchestrator.py       # full loop incl. step 6 quant
+python run_quant_strategy.py --ignition     # quant step only
+python test_watermark_evolution.py          # watermark demo
 ```
 
 Production Grok calls via `XAI_API_KEY` → `tryhard_quant_lsystem.py` (`grok-4` default).
+Use `--require-coherence` on orchestrator for deploys (300s gate enforced).
