@@ -42,10 +42,27 @@ class ForgeReadinessChecker:
             df["profit"] = 0.0
         return df
 
+    def _curated_setup_key(self, row: dict) -> tuple:
+        instrument = row.get("instrument", "")
+        mem_id = row.get("mem_id", "")
+        if not instrument:
+            for suffix in ("MES", "MNQ", "ES", "NQ", "BTC"):
+                if mem_id.endswith(f"_{suffix}"):
+                    instrument = suffix
+                    break
+        if not instrument:
+            instrument = Path(row.get("image_path", "legacy")).name
+        return (row.get("date"), row.get("timeframe"), row.get("tank_id"), instrument)
+
     def count_curated_setups(self) -> int:
         if not CURATED_LOG.exists():
             return 0
-        return sum(1 for line in CURATED_LOG.read_text(encoding="utf-8").splitlines() if line.strip())
+        keys: set[tuple] = set()
+        for line in CURATED_LOG.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            keys.add(self._curated_setup_key(json.loads(line)))
+        return len(keys)
 
     def count_memory_tanks(self) -> int:
         if not TANK_STORE.exists():

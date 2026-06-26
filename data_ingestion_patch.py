@@ -82,6 +82,14 @@ class ManualTrainingIngestor:
 
         return {"passed": passed, "checks": checks, "image_path": str(image_path)}
 
+    @staticmethod
+    def _primary_instrument(instruments: list[str] | str | None) -> str:
+        if isinstance(instruments, str):
+            return instruments.strip().upper() or "ROOT"
+        if instruments:
+            return str(instruments[0]).strip().upper() or "ROOT"
+        return "ROOT"
+
     def ingest_curated_setup(
         self,
         date_str: str,
@@ -90,11 +98,16 @@ class ManualTrainingIngestor:
         timeframe: str,
         cycle_tank_id: str,
         *,
+        instruments: list[str] | str | None = None,
         strict_image: bool = False,
         indicator_snapshot: dict | None = None,
     ) -> dict:
         """Inject a human-curated trade setup with image + tank correlation."""
-        print(f"[CURATOR] Ingesting hand-trained setup for {date_str} into {cycle_tank_id}...")
+        instrument = self._primary_instrument(instruments)
+        print(
+            f"[CURATOR] Ingesting hand-trained setup for {date_str} "
+            f"({instrument}) into {cycle_tank_id}..."
+        )
 
         verification = self.verify_setup(notes, associated_image_path, strict_image=strict_image)
         if not verification["passed"]:
@@ -104,11 +117,12 @@ class ManualTrainingIngestor:
             print(f"[WARNING] Chart screenshot not found at: {associated_image_path}. Metadata only.")
 
         tf_norm = self.normalize_timeframe(timeframe)
-        mem_id = f"curated_{date_str}_{tf_norm}"
+        mem_id = f"curated_{date_str}_{tf_norm}_{instrument}"
 
         metadata = {
             "timestamp": date_str,
             "target_timeframe": tf_norm,
+            "instrument": instrument,
             "associated_tank": cycle_tank_id,
             "image_path": str(Path(associated_image_path)),
             "verification_status": "HUMAN_CURATED",
@@ -130,6 +144,7 @@ class ManualTrainingIngestor:
             "mem_id": mem_id,
             "date": date_str,
             "timeframe": tf_norm,
+            "instrument": instrument,
             "tank_id": cycle_tank_id,
             "image_path": metadata["image_path"],
             "ingested_at": metadata["ingested_at"],
@@ -156,6 +171,7 @@ class ManualTrainingIngestor:
                 associated_image_path=row["image_path"],
                 timeframe=row.get("timeframe", "scalping"),
                 cycle_tank_id=row.get("cycle_tank_id", "TANK_01_MERCURY"),
+                instruments=row.get("instruments"),
                 strict_image=row.get("strict_image", False),
                 indicator_snapshot=row.get("indicators"),
             )
