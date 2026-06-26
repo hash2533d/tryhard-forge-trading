@@ -24,6 +24,17 @@ regime_library/charts/*
 regime_library/notes/*
 !regime_library/notes/.gitkeep
 
+# MES/MNQ raw datafeed drops (structure tracked via .gitkeep)
+datafeed/mes_mnq/ticks/*
+!datafeed/mes_mnq/ticks/.gitkeep
+datafeed/mes_mnq/bars/*
+!datafeed/mes_mnq/bars/.gitkeep
+datafeed/mes_mnq/session_exports/*
+!datafeed/mes_mnq/session_exports/.gitkeep
+datafeed/mes_mnq/seismograph/*
+!datafeed/mes_mnq/seismograph/.gitkeep
+mes_mnq_datafeed_report.json
+
 # Live trade exports (private)
 live_fills.csv
 

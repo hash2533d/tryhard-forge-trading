@@ -1,0 +1,19 @@
+{
+  "lane": "futures_micro",
+  "instruments": ["MES", "MNQ"],
+  "cycle_tank_id": "TANK_02_MERCURY",
+  "connection": "my_ninjatrader",
+  "nt8_sources": {
+    "tick_db": "Documents/NinjaTrader 8/db/tick",
+    "minute_db": "Documents/NinjaTrader 8/db/minute",
+    "export_dir": "Documents/NinjaTrader 8/export",
+    "janus_feed_confirm": "Documents/NinjaTrader 8/JanusEngine/Telemetry/janus_feed_confirm.json"
+  },
+  "forge_drop_zones": {
+    "ticks": "datafeed/mes_mnq/ticks",
+    "bars": "datafeed/mes_mnq/bars",
+    "session_exports": "datafeed/mes_mnq/session_exports",
+    "seismograph": "datafeed/mes_mnq/seismograph"
+  },
+  "collection_notes": "Drop NT8 exports and seismograph snapshots here for TANK_02 curation. Raw files gitignored; manifest tracked."
+}

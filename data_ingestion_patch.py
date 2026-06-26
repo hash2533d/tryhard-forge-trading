@@ -20,6 +20,7 @@ CURATED_LOG = ROOT / "curated_setups.jsonl"
 REGIME_LIBRARY = ROOT / "regime_library"
 CHARTS_DIR = REGIME_LIBRARY / "charts"
 NOTES_DIR = REGIME_LIBRARY / "notes"
+DATAFEED_DIR = ROOT / "datafeed" / "mes_mnq"
 DEFAULT_SCREENSHOTS = Path.home() / "Desktop" / "TradingScreenshots"
 
 VALID_TIMEFRAMES = {
@@ -166,6 +167,12 @@ def ensure_regime_folders() -> dict[str, str]:
     """Create local curation folder layout for months 1–6."""
     for path in (REGIME_LIBRARY, CHARTS_DIR, NOTES_DIR, DEFAULT_SCREENSHOTS):
         path.mkdir(parents=True, exist_ok=True)
+    for sub in ("ticks", "bars", "session_exports", "seismograph"):
+        zone = DATAFEED_DIR / sub
+        zone.mkdir(parents=True, exist_ok=True)
+        keep = zone / ".gitkeep"
+        if not keep.exists():
+            keep.write_text("", encoding="utf-8")
     manifest = REGIME_LIBRARY / "daily_manifest.jsonl"
     if not manifest.exists():
         manifest.write_text("", encoding="utf-8")
@@ -173,6 +180,7 @@ def ensure_regime_folders() -> dict[str, str]:
         "regime_library": str(REGIME_LIBRARY),
         "charts": str(CHARTS_DIR),
         "notes": str(NOTES_DIR),
+        "datafeed_mes_mnq": str(DATAFEED_DIR),
         "desktop_screenshots": str(DEFAULT_SCREENSHOTS),
         "manifest": str(manifest),
     }
