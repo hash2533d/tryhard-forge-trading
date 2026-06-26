@@ -190,3 +190,17 @@ Desktop/TradingScreenshots/   # primary drop zone
 python data_ingestion_patch.py --init-folders
 python data_ingestion_patch.py --manifest regime_library/daily_manifest.jsonl
 ```
+
+## SECTION 18: PHASED SCALING LADDER (2-MONTH LIVE GATE)
+
+| Phase | Window | Execution | Gate |
+|-------|--------|-----------|------|
+| 1 Foundation | Months 1–2 | 100% sim, MES Safe Adjust ATMs | PF ≥ 1.3, WR ≥ 60%, 3 tanks |
+| 2 Micro Ignition | Month 3 | 1 MES live, shadow regret loop | `readiness_checker.py` APPROVED |
+| 3 Pyramiding | Months 4–6 | +2nd MES @ +16 BE; ES after lock | Low accumulated regret |
+
+```bash
+python readiness_checker.py
+```
+
+**Micro risk bound:** 1 MES, ~12-tick stop ≈ **$15** structural risk per trade.
