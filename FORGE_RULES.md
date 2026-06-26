@@ -160,3 +160,33 @@ python research_and_backtest_engine.py --instrument MES
 ```bash
 python eighteen_day_memory_tank.py
 ```
+
+## SECTION 17: 6-MONTH HAND-TRAINING & CURATION BOUNDS
+
+**[OPERATIONAL PROTOCOL]:** During the initial 6-month cultivation cycle (Jun–Dec 2026), autonomous training adjustments are suspended. The human operator is the sole validator of baseline edges.
+
+### 17.1 Manual ingestion pipelines
+
+- Every memory node must carry `verification_status: "HUMAN_CURATED"`.
+- Agent trajectory adjustments restricted unless resonance ≥ **0.85** against a curated setup from months 1–6.
+- Automated loops run in passive **Shadow Mode** — track machine vs manual error, no order execution.
+- Daily workflow: drop charts → `data_ingestion_patch.py` → Chroma + `curated_setups.jsonl` + 18-day tank ID.
+
+### 17.2 Folder layout (local)
+
+```
+regime_library/charts/          # copied screenshots
+regime_library/notes/           # session reflections (.txt optional)
+regime_library/daily_manifest.jsonl   # batch ingest queue (gitignored when live)
+Desktop/TradingScreenshots/   # primary drop zone
+```
+
+### 17.3 Phase transition (Month 7+)
+
+- Target: ~10 full 18-day Memory Tanks (~730+ curated nodes).
+- Enable: `live_regret_loop.py` daemon + autonomous chart capture + tank auto-compose.
+
+```bash
+python data_ingestion_patch.py --init-folders
+python data_ingestion_patch.py --manifest regime_library/daily_manifest.jsonl
+```

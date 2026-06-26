@@ -10,6 +10,12 @@ verify_agent_state.json
 novel_overflow_pivots.jsonl
 agent_schedule.jsonl
 memory_tanks.json
+curated_setups.jsonl
+regime_library/daily_manifest.jsonl
+regime_library/charts/*
+!regime_library/charts/.gitkeep
+regime_library/notes/*
+!regime_library/notes/.gitkeep
 
 # Live trade exports (private)
 live_fills.csv
