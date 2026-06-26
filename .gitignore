@@ -2,6 +2,7 @@
 agent_longterm_memory/
 ingested_agent_memory.json
 regret_updates.jsonl
+structured_facts.jsonl
 last_ignition_report.json
 
 # Live trade exports (private)

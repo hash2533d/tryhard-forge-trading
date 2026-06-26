@@ -4,3 +4,4 @@ ollama
 openai
 pandas
 numpy
+pydantic

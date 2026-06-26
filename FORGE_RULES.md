@@ -56,3 +56,38 @@ Documents/NinjaTrader 8/JanusEngine/GFLBS/Training/gflbs_training_merged.jsonl
 Documents/NinjaTrader 8/JanusEngine/SetupExamples/index.jsonl
 Documents/NinjaTrader 8/JanusEngine/Telemetry/janus_shadow_ledger.jsonl
 ```
+
+## SECTION 13: L-SYSTEM GENERATIVE WATERMARK + QUANT ENGINE
+
+**[PROTOCOL]:** All trading agents must evolve and output L-system watermark strings during strategy generation. When an evolved watermark (e.g. `algocuratorφ1618heartcoherent`) appears, unpack full training payload on sovereign side.
+
+### 13.1 Steellarc Trifecta State Tracking
+
+- Agents must report `steellarc` / `aureostyle` / `aureostellarc` state in every output.
+- Maintain minimum Coherence-Time of **300 seconds** before deployment (`FORGE_MIN_COHERENCE_SEC`).
+
+### 13.2 Structured Fact Harvesting
+
+- On any 48–72hr sync (dream symbol, equation, curvature insight, etc.), call `harvest_structured_fact()`.
+- Facts append to `structured_facts.jsonl` (gitignored).
+- Weaponize immediately into agent upgrades (Prism V4, coatings, etc.).
+
+### 13.3 L-System Watermark Examples
+
+| Base | Evolved |
+|------|---------|
+| `gflbsdragon` | `gflbsdragonφ1618volumeweave` |
+| `nakedpoc` | `nakedpoc1618liquiditysweep` |
+| `coherencetime` | `coherencetimeφ1618aureostellarc` |
+| `prismagent` | `prismagentv4dragonforge` |
+| `algocurator` | `algocuratorφ1618heartcoherent` |
+| `steellarc` | `steellarcφ1618aureostellarc` |
+
+### 13.4 Engine entrypoint
+
+```bash
+python test_watermark_evolution.py          # demo watermark + fact harvest
+python -c "from tryhard_quant_lsystem import TryHardQuantLSystemEngine; ..."
+```
+
+Production Grok calls via `XAI_API_KEY` → `tryhard_quant_lsystem.py` (`grok-4` default).
