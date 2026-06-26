@@ -12,6 +12,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from atm_rules import format_atm_context, load_atm_execution_bounds
+
 ROOT = Path(__file__).resolve().parent
 FACTS_LOG = ROOT / "structured_facts.jsonl"
 GROK_MODEL = os.getenv("GFLBS_GROK_MODEL", "grok-4")
@@ -160,11 +162,13 @@ class TryHardQuantLSystemEngine:
         self.agent_state.watermark_evolved = evolved_wm
         self.update_agent_state("aureostellarc")
 
+        atm_rules = load_atm_execution_bounds()
         user_payload = (
             f"RAW INTUITION: {raw_intuition}\n"
             f"REGIME METRICS: {json.dumps(regime_metrics, indent=2)}\n"
             f"EVOLVED WATERMARK: {evolved_wm}\n"
             f"AGENT STATE: {json.dumps(asdict(self.agent_state))}\n"
+            f"{format_atm_context(atm_rules)}"
         )
 
         if not self.api_key:

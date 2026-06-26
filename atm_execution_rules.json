@@ -1,0 +1,81 @@
+{
+  "matrix_meta": {
+    "strategy_group": "MES_ES_Pyramid_Safe_Adjust",
+    "last_validated": "2026-06-25",
+    "execution_engine": "NinjaTrader_8_ATM"
+  },
+  "atm_templates": {
+    "MES_Safe_Adjust": {
+      "instrument_target": "MES",
+      "initial_quantity": 1,
+      "baseline_profit_target_ticks": 100,
+      "baseline_stop_loss_ticks": 40,
+      "auto_breakeven": {
+        "profit_trigger_ticks": 20,
+        "plus_ticks": 5
+      },
+      "auto_trail_steps": [
+        {
+          "step": 1,
+          "stop_loss_offset_ticks": 15,
+          "profit_trigger_ticks": 25,
+          "frequency_ticks": 2
+        },
+        {
+          "step": 2,
+          "stop_loss_offset_ticks": 10,
+          "profit_trigger_ticks": 50,
+          "frequency_ticks": 2
+        }
+      ],
+      "discreet_manual_bounds": {
+        "tighten_stop_at_profit_ticks": 10,
+        "target_manual_stop_ticks": 2,
+        "compress_target_at_profit_ticks": 16,
+        "target_manual_profit_ticks": 20
+      }
+    },
+    "MES_Scale_Safe": {
+      "instrument_target": "MES",
+      "scale_in_trigger_profit_ticks": 16,
+      "baseline_profit_target_ticks": 60,
+      "baseline_stop_loss_ticks": 30,
+      "auto_breakeven": {
+        "profit_trigger_ticks": 15,
+        "plus_ticks": 5
+      },
+      "auto_trail_steps": [
+        {
+          "step": 1,
+          "stop_loss_offset_ticks": 10,
+          "profit_trigger_ticks": 30,
+          "frequency_ticks": 2
+        }
+      ]
+    },
+    "ES_Scale_Safe": {
+      "instrument_target": "ES",
+      "trigger_condition": "MES_1_and_MES_2_locked_at_least_5_ticks",
+      "baseline_profit_target_ticks": 40,
+      "baseline_stop_loss_ticks": 30,
+      "auto_breakeven": {
+        "profit_trigger_ticks": 10,
+        "plus_ticks": 0
+      },
+      "auto_trail_steps": [
+        {
+          "step": 1,
+          "stop_loss_offset_ticks": 10,
+          "profit_trigger_ticks": 20,
+          "frequency_ticks": 2
+        },
+        {
+          "step": 2,
+          "stop_loss_offset_ticks": 5,
+          "profit_trigger_ticks": 30,
+          "frequency_ticks": 2
+        }
+      ]
+    }
+  }
+}

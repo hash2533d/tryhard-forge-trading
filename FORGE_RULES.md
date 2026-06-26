@@ -121,3 +121,26 @@ Metadata stored per edge: `flux_mod9`, `flux_digital_root`, `flux_multiplier`, `
 ```bash
 python test_flux_369.py
 ```
+
+## SECTION 15: MIGRATORY RISK & DISCREET ATM OVERRIDES
+
+**[OPERATIONAL PROTOCOL]:** When formulating trade execution signals or adjusting entry profiles, the agent must reference the `MES_ES_Pyramid_Safe_Adjust` matrix in `atm_execution_rules.json`. Vague risk recommendations are restricted.
+
+### 15.1 Scrutiny Mitigation (Intentional Friction Minimization)
+
+- Baseline entry brackets must initially register as wide parameters (e.g., 40/100 ticks for micro contracts) to match historical consistency templates.
+- Tactical manual tightening must occur at specified milestones (e.g., move stop to +2 ticks when position achieves +10 ticks favorable) to mimic regular trade management behavior.
+- Pyramiding from MES into ES can only occur when existing micro risk exposure is mathematically locked at positive breakeven (`MES_1_and_MES_2_locked_at_least_5_ticks`).
+- Prefer automated trail steps (15/25/2) over manual broker adjustment commands during prop evaluation sessions.
+
+### 15.2 ATM template reference
+
+| Template | Instrument | Baseline SL/PT (ticks) | Trail |
+|----------|------------|------------------------|-------|
+| MES_Safe_Adjust | MES | 40 / 100 | 15/25/2 then 10/50/2 |
+| MES_Scale_Safe | MES | 30 / 60 | scale +16, trail 10/30/2 |
+| ES_Scale_Safe | ES | 30 / 40 | after MES locked +5 ticks |
+
+```bash
+python research_and_backtest_engine.py --instrument MES
+```
