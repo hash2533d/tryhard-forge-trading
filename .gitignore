@@ -10,6 +10,8 @@ verify_agent_state.json
 novel_overflow_pivots.jsonl
 agent_schedule.jsonl
 memory_tanks.json
+prediction_log.jsonl
+univac_backtest_report.json
 curated_setups.jsonl
 readiness_report.json
 cursor_handoff.json

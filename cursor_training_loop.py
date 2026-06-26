@@ -58,6 +58,7 @@ def main() -> int:
     report["steps"].append(run("build_ingested_memory.py"))
     report["steps"].append(run("discover_persist.py"))
     report["steps"].append(run("readiness_checker.py"))
+    report["steps"].append(run("univac_backtest.py"))
 
     if args.full_forge:
         report["steps"].append(run("run_trading_forge.py", ["--skip-ingest"]))
@@ -66,6 +67,10 @@ def main() -> int:
     readiness_path = ROOT / "readiness_report.json"
     if readiness_path.exists():
         report["readiness"] = json.loads(readiness_path.read_text(encoding="utf-8"))
+
+    univac_path = ROOT / "univac_backtest_report.json"
+    if univac_path.exists():
+        report["univac_backtest"] = json.loads(univac_path.read_text(encoding="utf-8"))
 
     def step_ok(step: dict) -> bool:
         if step.get("returncode", 0) == 0:
