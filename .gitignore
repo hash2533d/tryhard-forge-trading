@@ -9,6 +9,7 @@ last_forge_report.json
 verify_agent_state.json
 novel_overflow_pivots.jsonl
 agent_schedule.jsonl
+memory_tanks.json
 
 # Live trade exports (private)
 live_fills.csv

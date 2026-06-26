@@ -144,3 +144,19 @@ python test_flux_369.py
 ```bash
 python research_and_backtest_engine.py --instrument MES
 ```
+
+## SECTION 16: 18-DAY RECIRCULATING MEMORY CAVITIES
+
+**[OPERATIONAL PROTOCOL]:** Intraday trade signals must be verified against the active 18-day tank array to confirm ancestor continuity before placing orders.
+
+### 16.1 Resonance checking
+
+- If `detect_anomaly()` returns an anomaly flag or resonance scores fall below **0.82**, reduce sizing by 50% and activate defensive trailing stops.
+- Long-horizon trajectory biases must scale relative to the multi-tank weighted ensemble output (`get_long_horizon_prediction`).
+- Tanks persist to `memory_tanks.json` (gitignored); max **20** cavities FIFO-pruned.
+
+### 16.2 Engine entrypoint
+
+```bash
+python eighteen_day_memory_tank.py
+```
