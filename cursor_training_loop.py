@@ -58,6 +58,7 @@ def main() -> int:
     report["steps"].append(run("build_ingested_memory.py"))
     report["steps"].append(run("discover_persist.py"))
     report["steps"].append(run("readiness_checker.py"))
+    report["steps"].append(run("prediction_training_loop.py"))
     report["steps"].append(run("univac_backtest.py"))
 
     if args.full_forge:
@@ -67,6 +68,10 @@ def main() -> int:
     readiness_path = ROOT / "readiness_report.json"
     if readiness_path.exists():
         report["readiness"] = json.loads(readiness_path.read_text(encoding="utf-8"))
+
+    training_path = ROOT / "prediction_training_report.json"
+    if training_path.exists():
+        report["prediction_training"] = json.loads(training_path.read_text(encoding="utf-8"))
 
     univac_path = ROOT / "univac_backtest_report.json"
     if univac_path.exists():
@@ -81,9 +86,15 @@ def main() -> int:
         return False
 
     report["success"] = all(step_ok(s) for s in report["steps"] if "returncode" in s)
+    pt = report.get("prediction_training", {})
+    univac = report.get("univac_backtest", {})
     report["cursor_chat_opener"] = (
-        "@CURSOR_TRAINING.md @cursor_handoff.json — Forge training sync complete. "
-        f"Status: {report.get('readiness', {}).get('ignition_status', 'unknown')}"
+        "@CURSOR_TRAINING.md @cursor_handoff.json @prediction_training_report.json — "
+        "Forge training sync complete. "
+        f"Readiness: {report.get('readiness', {}).get('ignition_status', 'unknown')}. "
+        f"Predictor: {pt.get('log_accuracy', {}).get('resolved', 0)} resolved, "
+        f"1d acc={pt.get('log_accuracy', {}).get('accuracy_1d')}. "
+        f"UNIVAC sim grade: {univac.get('univac_grade', 'n/a')}."
     )
 
     HANDOFF_PATH.write_text(json.dumps(report, indent=2), encoding="utf-8")

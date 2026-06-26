@@ -1,0 +1,23 @@
+{
+  "tank_id": "TANK_01_MERCURY",
+  "waveform_stats": {
+    "mean_force": 11.8,
+    "max_amplitude": 42.5,
+    "resonance_score": 0.86
+  },
+  "tas_distribution": {
+    "exploration_pct": 0.22,
+    "reinforcement_pct": 0.30,
+    "stabilization_pct": 0.48
+  },
+  "crr_paths": [1, 1, 0, 1, 1],
+  "outcomes": {
+    "direction_1d": "UP",
+    "direction_2d": "UP",
+    "actual_1d_up_prob": 0.68,
+    "actual_2d_up_prob": 0.62,
+    "magnitude_1d_pct": 0.36,
+    "magnitude_2d_pct": 0.22
+  },
+  "notes": "Fill after 18-day cycle closes. Outcomes = realized 1d/2d market direction from seismograph epoch."
+}

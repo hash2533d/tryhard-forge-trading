@@ -11,6 +11,8 @@ novel_overflow_pivots.jsonl
 agent_schedule.jsonl
 memory_tanks.json
 prediction_log.jsonl
+prediction_training_report.json
+predictor_state.json
 univac_backtest_report.json
 curated_setups.jsonl
 readiness_report.json

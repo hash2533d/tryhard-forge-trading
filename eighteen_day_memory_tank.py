@@ -14,6 +14,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent
 TANK_STORE = ROOT / "memory_tanks.json"
 PREDICTION_LOG = ROOT / "prediction_log.jsonl"
+PREDICTOR_STATE = ROOT / "predictor_state.json"
 
 Direction = Literal["UP", "DOWN", "FLAT"]
 
@@ -101,6 +102,36 @@ class PredictionEngine:
         self.anomaly_threshold = anomaly_threshold
         self.action_confidence = action_confidence
         self.log_path = log_path
+        self._load_state()
+
+    def _load_state(self) -> None:
+        if PREDICTOR_STATE.exists():
+            state = json.loads(PREDICTOR_STATE.read_text(encoding="utf-8"))
+            self.top_n = int(state.get("top_n", self.top_n))
+            self.anomaly_threshold = float(state.get("anomaly_threshold", self.anomaly_threshold))
+            self.action_confidence = float(state.get("action_confidence", self.action_confidence))
+
+    def predict_at_cycle_open(
+        self,
+        cycle_tank_id: str,
+        current_waveform_stats: dict,
+        current_tas_dist: dict | None = None,
+        current_crr_paths: list | None = None,
+    ) -> dict:
+        """Log a cycle-open forecast linked to a tank ID for later training resolution."""
+        result = self.predict_1_to_2_days_ahead(
+            current_waveform_stats, current_tas_dist, current_crr_paths
+        )
+        if result.get("prediction_id") and self.log_path.exists():
+            lines = self.log_path.read_text(encoding="utf-8").splitlines()
+            if lines:
+                row = json.loads(lines[-1])
+                if row.get("prediction_id") == result["prediction_id"]:
+                    row["cycle_tank_id"] = cycle_tank_id
+                    row["cycle_phase"] = "open"
+                    lines[-1] = json.dumps(row)
+                    self.log_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        return result
 
     def _weighted_ensemble(
         self,
@@ -175,6 +206,8 @@ class PredictionEngine:
         current_waveform_stats: dict,
         current_tas_dist: dict | None = None,
         current_crr_paths: list | None = None,
+        *,
+        log: bool = True,
     ) -> dict:
         """
         Ensemble 1–2 day directional bias from resonant ancestor tanks.
@@ -265,7 +298,8 @@ class PredictionEngine:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-        self._log_prediction(result, current_waveform_stats, tas, current_crr_paths)
+        if log:
+            self._log_prediction(result, current_waveform_stats, tas, current_crr_paths)
         return result
 
     def _log_prediction(
@@ -376,7 +410,8 @@ class EighteenDayMemoryTankSystem:
         outcomes: dict,
         *,
         quiet: bool = False,
-    ) -> None:
+        train_on_complete: bool = False,
+    ) -> dict:
         """Ingest a completed 18-day market cycle into the recirculating memory cavity."""
         feature_vector = _feature_vector(waveform_stats, tas_distribution)
 
@@ -401,6 +436,21 @@ class EighteenDayMemoryTankSystem:
         self.tanks[tank_id] = tank_node
         if not quiet:
             print(f"[TANK ENGINE] Composed 18-Day Memory Tank '{tank_id}' into active lattice.")
+
+        if train_on_complete:
+            from prediction_training_loop import PredictionTrainingLoop
+
+            trainer = PredictionTrainingLoop(self)
+            training_report = trainer.on_tank_completed(
+                tank_id=tank_id,
+                waveform_stats=waveform_stats,
+                tas_distribution=tas_distribution,
+                crr_paths=crr_paths,
+                outcomes=outcomes,
+            )
+            tank_node["training_report"] = training_report
+
+        return tank_node
 
     def find_similar_tanks(
         self,
@@ -480,12 +530,15 @@ class EighteenDayMemoryTankSystem:
         current_waveform_stats: dict,
         current_tas_dist: dict | None = None,
         current_crr_paths: list | None = None,
+        *,
+        log: bool = True,
     ) -> dict:
         """Delegate to PredictionEngine — primary agent-facing forecast API."""
         return self.predictor.predict_1_to_2_days_ahead(
             current_waveform_stats,
             current_tas_dist,
             current_crr_paths,
+            log=log,
         )
 
     def save(self, path: Path = TANK_STORE) -> None:

@@ -31,7 +31,9 @@ You are helping the user **curate** the 6-month Regime Library. Full doc: `CURSO
 ## Notes quality bar
 
 - Min 20 chars; reference GFLBS node, ribbon, session phase, ATM template used
-- Tag tank ID (`TANK_01_MERCURY`, increment per 18-day cycle)
+- Tag tank ID — **futures:** `TANK_01_MERCURY` … `TANK_03_MERCURY` | **BTC (separate lane):** `TANK_BTC_01_MERCURY` … `TANK_BTC_03_MERCURY`
+- Never mix BTC and futures in one tank; see `regime_library/tank_schedule.json`
+- BTC notes: GFLBS nodes only — no POC/VAH/VAL
 - `timeframe`: Scalping → scalper, Day Trader → daytrade, Swing → swing
 
 ## What to do when user says…
@@ -43,6 +45,8 @@ You are helping the user **curate** the 6-month Regime Library. Full doc: `CURSO
 | "week 1 data" | Init folders + example manifest + ingest |
 | "ready for live?" | `readiness_checker.py` + explain Phase 2 gates |
 | "shadow mode" | Regret loop on fills, no live execution |
+| "seal tank" / "cycle complete" | Draft `tank_completion.json` → `finalize_tank_cycle.py --spec ...` |
+| "UNIVAC" / "predictor" | `prediction_training_loop.py` + read `prediction_training_report.json` |
 
 ## Forbidden in Phase 1
 

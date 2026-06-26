@@ -132,6 +132,7 @@ def run_leave_one_out(specs: list[dict], *, action_confidence: float = 0.75) -> 
             holdout["waveform_stats"],
             holdout["tas_distribution"],
             holdout["crr_paths"],
+            log=False,
         )
 
         actual = holdout["outcomes"]

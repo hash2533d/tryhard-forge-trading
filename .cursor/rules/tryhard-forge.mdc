@@ -35,6 +35,7 @@ Master: `python run_trading_forge.py` or `python cursor_training_loop.py`
 - **Resonance:** agent adjustments need similarity ≥ 0.85 vs curated library
 - **Live MES:** only when `readiness_checker.py` → `APPROVED_FOR_MICRO_LIVE`
 - **18-day tanks:** `detect_anomaly()` < 0.82 → 50% size reduction
+- **UNIVAC predictor:** `predict_1_to_2_days_ahead()` — act only when `action_threshold_met`; seal cycles via `finalize_tank_cycle.py`; daily `prediction_training_loop.py`
 
 ## GFLBS rules (never break)
 
