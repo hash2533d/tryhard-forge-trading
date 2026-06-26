@@ -5,6 +5,10 @@ regret_updates.jsonl
 structured_facts.jsonl
 last_ignition_report.json
 last_quant_strategy.json
+last_forge_report.json
+verify_agent_state.json
+novel_overflow_pivots.jsonl
+agent_schedule.jsonl
 
 # Live trade exports (private)
 live_fills.csv

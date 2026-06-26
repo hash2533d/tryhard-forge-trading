@@ -2,15 +2,24 @@
 
 Portable rules for the GFLBS multi-timeframe trading orchestration loop.
 
-## Pipeline order
+## 5-Step Agentic Loop (primary)
 
-1. **Ingest** (`build_ingested_memory.py`) — GFLBS training + Janus SetupExamples → `ingested_agent_memory.json`
-2. **Seed** (`seed_memory.py`) — Chroma `trading_memory` collection with Hebbian base weights
-3. **Regret** (`live_regret_loop.py`) — NT8 fills → weight nudges on nearest memory vectors
-4. **Timeframe** (`timeframe_context_builder.py`) — Scalper / Day / Swing profile injection by clock
-5. **Ignite** (`assemble_and_call.py`) — Grok primary, Ollama (`phi4:latest`) fallback
-6. **Quant L-System** (`run_quant_strategy.py`) — Steellarc Trifecta strategy + fact harvest
-7. **Verify** (`verify_stack.py`) — health check
+| Step | Script | Action |
+|------|--------|--------|
+| 1 Discover + Persist | `discover_persist.py` | Seed `trading_memory` + `hebbian_edges` |
+| 2 Hand Off | `handoff_timeframe.py` | Inject scalper / swing / long-term profile |
+| 3 Verify + Regret | `verify_regret_loop.py` | Second agent: verify fills, Hebbian prune, pivot |
+| 4 Schedule + Call | `schedule_agent_call.py` | Grok primary agent call + schedule log |
+| 5 Verify Forge | `forge_verify.py` | Health check |
+
+**Master runner:** `python run_trading_forge.py`
+
+## Extended pipeline (ignition orchestrator)
+
+0. **Ingest** (`build_ingested_memory.py`) — Janus JSONL → `ingested_agent_memory.json`
+1–4. Same as 5-step loop above
+5. **Quant L-System** (`run_quant_strategy.py`) — Steellarc Trifecta + fact harvest
+6. **Legacy verify** (`verify_stack.py`)
 
 ## Core trading rules (never break)
 

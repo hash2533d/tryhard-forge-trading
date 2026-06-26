@@ -12,7 +12,7 @@ from typing import Literal
 import chromadb
 from chromadb.utils import embedding_functions
 
-from timeframe_context_builder import get_active_profile
+from handoff_timeframe import get_active_profile
 
 ROOT = Path(__file__).resolve().parent
 CHROMA_PATH = ROOT / "agent_longterm_memory"

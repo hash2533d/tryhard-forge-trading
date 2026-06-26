@@ -9,7 +9,7 @@ import sys
 import time
 from pathlib import Path
 
-from timeframe_context_builder import get_active_profile
+from handoff_timeframe import get_active_profile
 from tryhard_quant_lsystem import TryHardQuantLSystemEngine
 
 ROOT = Path(__file__).resolve().parent
