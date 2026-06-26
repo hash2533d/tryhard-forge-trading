@@ -51,7 +51,12 @@ def main() -> int:
     print("=== Cursor Training Loop ===")
 
     if manifest_has_entries():
-        report["steps"].append(run("data_ingestion_patch.py", ["--manifest", str(MANIFEST)]))
+        ingest_step = run("data_ingestion_patch.py", ["--manifest", str(MANIFEST)])
+        report["steps"].append(ingest_step)
+        if ingest_step.get("returncode", 0) == 0:
+            MANIFEST.write_text("", encoding="utf-8")
+            report["manifest_cleared"] = True
+            print("Cleared daily_manifest.jsonl after successful ingest.")
     elif not args.skip_ingest_if_empty:
         print("SKIP ingest: empty daily_manifest.jsonl")
 
